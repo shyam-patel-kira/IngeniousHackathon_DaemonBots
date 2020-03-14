@@ -40,3 +40,24 @@ CREATE TABLE "core_payment" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "s
 CREATE TABLE "core_refund" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "reason" text NOT NULL, "accepted" bool NOT NULL, "email" varchar(254) NOT NULL, "order_id" integer NOT NULL REFERENCES "core_order" ("id") DEFERRABLE INITIALLY DEFERRED)
 
 CREATE TABLE "core_userprofile" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "stripe_customer_id" varchar(50) NULL, "user_id" integer NOT NULL UNIQUE REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED, "one_click_purchasing" bool NOT NULL)
+
+CREATE TABLE "django_admin_log" (
+	"id"	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+	"action_time"	datetime NOT NULL,
+	"object_id"	text,
+	"object_representation"	varchar(200) NOT NULL,
+	"change_message"	text NOT NULL,
+	"content_type_id"	integer,
+	"user_id"	integer NOT NULL,
+	"action_flag"	smallint unsigned NOT NULL CHECK("action_flag">=0),
+	FOREIGN KEY("user_id") REFERENCES "auth_user"("id") DEFERRABLE INITIALLY DEFERRED,
+	FOREIGN KEY("content_type_id") REFERENCES "django_content_type"("id") DEFERRABLE INITIALLY DEFERRED
+)
+
+CREATE TABLE "django_content_type" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "app_label" varchar(100) NOT NULL, "model" varchar(100) NOT NULL)
+
+CREATE TABLE "django_migrations" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "app" varchar(255) NOT NULL, "name" varchar(255) NOT NULL, "applied" datetime NOT NULL)
+
+CREATE TABLE "django_session" ("session_key" varchar(40) NOT NULL PRIMARY KEY, "session_data" text NOT NULL, "expire_date" datetime NOT NULL)
+
+CREATE TABLE "django_site" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(50) NOT NULL, "domain" varchar(100) NOT NULL UNIQUE)
