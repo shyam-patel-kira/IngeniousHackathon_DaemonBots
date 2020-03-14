@@ -14,4 +14,29 @@ CREATE TABLE "auth_user_groups" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT
 
 CREATE TABLE "auth_user_permissions" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "user_id" integer NOT NULL REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED, "permission_id" integer NOT NULL REFERENCES "auth_permission" ("id") DEFERRABLE INITIALLY DEFERRED)
 
+CREATE TABLE "core_address" (
+	"id"	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+	"address"	varchar(100) NOT NULL,
+	"country"	varchar(2) NOT NULL,
+	"zip"	varchar(100) NOT NULL,
+	"address_type"	varchar(1) NOT NULL,
+	"default"	bool NOT NULL,
+	"user_id"	integer NOT NULL,
+	FOREIGN KEY("user_id") REFERENCES "auth_user"("id") DEFERRABLE INITIALLY DEFERRED
+)
 
+CREATE TABLE "core_coupon" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "code" varchar(15) NOT NULL, "amount" real NOT NULL)
+
+CREATE TABLE "core_item" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "title" varchar(100) NOT NULL, "price" real NOT NULL, "discount_price" real NULL, "category" varchar(2) NOT NULL, "label" varchar(1) NOT NULL, "slug" varchar(50) NOT NULL, "description" text NOT NULL, "image" varchar(100) NOT NULL)
+
+CREATE TABLE "core_order" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "start_date" datetime NOT NULL, "ordered_date" datetime NOT NULL, "ordered" bool NOT NULL, "being_delivered" bool NOT NULL, "received" bool NOT NULL, "refund_requested" bool NOT NULL, "refund_granted" bool NOT NULL, "billing_address_id" integer NULL REFERENCES "core_address" ("id") DEFERRABLE INITIALLY DEFERRED, "coupon_id" integer NULL REFERENCES "core_coupon" ("id") DEFERRABLE INITIALLY DEFERRED, "payment_id" integer NULL REFERENCES "core_payment" ("id") DEFERRABLE INITIALLY DEFERRED, "shipping_address_id" integer NULL REFERENCES "core_address" ("id") DEFERRABLE INITIALLY DEFERRED, "user_id" integer NOT NULL REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED, "ref_code" varchar(20) NULL)
+
+CREATE TABLE "core_order_items" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "order_id" integer NOT NULL REFERENCES "core_order" ("id") DEFERRABLE INITIALLY DEFERRED, "orderitem_id" integer NOT NULL REFERENCES "core_orderitem" ("id") DEFERRABLE INITIALLY DEFERRED)
+
+CREATE TABLE "core_orderitem" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "ordered" bool NOT NULL, "quantity" integer NOT NULL, "item_id" integer NOT NULL REFERENCES "core_item" ("id") DEFERRABLE INITIALLY DEFERRED, "user_id" integer NOT NULL REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED)
+
+CREATE TABLE "core_payment" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "stripe_charge_id" varchar(50) NOT NULL, "amount" real NOT NULL, "timestamp" datetime NOT NULL, "user_id" integer NULL REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED)
+
+CREATE TABLE "core_refund" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "reason" text NOT NULL, "accepted" bool NOT NULL, "email" varchar(254) NOT NULL, "order_id" integer NOT NULL REFERENCES "core_order" ("id") DEFERRABLE INITIALLY DEFERRED)
+
+CREATE TABLE "core_userprofile" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "stripe_customer_id" varchar(50) NULL, "user_id" integer NOT NULL UNIQUE REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED, "one_click_purchasing" bool NOT NULL)
