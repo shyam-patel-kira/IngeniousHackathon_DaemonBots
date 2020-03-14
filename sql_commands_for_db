@@ -61,3 +61,20 @@ CREATE TABLE "django_migrations" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMEN
 CREATE TABLE "django_session" ("session_key" varchar(40) NOT NULL PRIMARY KEY, "session_data" text NOT NULL, "expire_date" datetime NOT NULL)
 
 CREATE TABLE "django_site" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(50) NOT NULL, "domain" varchar(100) NOT NULL UNIQUE)
+
+CREATE TABLE "socialaccount_account" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "provider" varchar(30) NOT NULL, "uid" varchar(191) NOT NULL, "last_login" datetime NOT NULL, "date_joined" datetime NOT NULL, "user_id" integer NOT NULL REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED, "extra_data" text NOT NULL)
+
+CREATE TABLE "socialaccount_social_app" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "provider" varchar(30) NOT NULL, "name" varchar(40) NOT NULL, "client_id" varchar(191) NOT NULL, "key" varchar(191) NOT NULL, "secret" varchar(191) NOT NULL)
+
+CREATE TABLE "socialaccount_social_app_sites" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "socialapp_id" integer NOT NULL REFERENCES "socialaccount_social_app" ("id") DEFERRABLE INITIALLY DEFERRED, "site_id" integer NOT NULL REFERENCES "django_site" ("id") DEFERRABLE INITIALLY DEFERRED)
+
+CREATE TABLE "socialaccount_social_token" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "token" text NOT NULL, "token_secret" text NOT NULL, "expires_at" datetime NULL, "account_id" integer NOT NULL REFERENCES "socialaccount_account" ("id") DEFERRABLE INITIALLY DEFERRED, "app_id" integer NOT NULL REFERENCES "socialaccount_social_app" ("id") DEFERRABLE INITIALLY DEFERRED)
+
+CREATE TABLE sqlite_sequence(name,seq)
+
+
+
+
+
+
+
